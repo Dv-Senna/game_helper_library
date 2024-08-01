@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include "helpers/global.hpp"
+
 
 
 namespace gm {
@@ -9,6 +11,14 @@ namespace gm {
 		m_window {nullptr},
 		m_size {size}
 	{
+		static bool firstWindow {true};
+
+		gm::Global::addWindow(this);
+		if (firstWindow) {
+			gm::Global::getInstance().pushCurrentWindow(*this);
+			firstWindow = false;
+		}
+
 		m_window = SDL_CreateWindow(
 			title.c_str(),
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
