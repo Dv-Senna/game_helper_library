@@ -1,25 +1,39 @@
-#define SDL_MAIN_HANDLED
+#include <exception>
+#include <iostream>
+
 #include <SDL2/SDL.h>
+
+#include "helpers/instance.hpp"
+#include "helpers/window.hpp"
+
 
 
 int main() {
+	try {
+		gm::Instance instance {};
+		gm::Window window {"Hello", {16 * 70, 9 * 70}};
 
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Window *window {SDL_CreateWindow("Hello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 16 * 70, 9 * 70, 0)};
+		bool running {true};
+		while (running) {
+			SDL_Event event {};
+			while (SDL_PollEvent(&event)) {
+				if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+					running = false;
+					break;
+				}
 
-	bool running {true};
-	while (running) {
-		SDL_Event event {};
-		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
-				running = false;
-				break;
+				if (event.type == SDL_QUIT) {
+					running = false;
+					break;
+				}
 			}
-		}
+		}		
 	}
 
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+	catch (const std::exception &exception) {
+		std::cerr << "ERROR : " << exception.what() << std::endl;
+		std::cerr << "SDL2 message : " << SDL_GetError() << std::endl;
+	}
 
 	return 0;
 }
